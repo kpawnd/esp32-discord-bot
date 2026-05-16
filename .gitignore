@@ -1,0 +1,35 @@
+# Build output (ESP-IDF / CMake)
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+*.elf
+*.bin
+*.map
+*.o
+*.a
+*.d
+*.obj
+*.ninja
+*.ninja_deps
+*.ninja_log
+
+# ESP-IDF component manager
+/managed_components/
+
+# Local caches
+/.cache/
+/.claude/
+/.venv/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# SDK config backups
+sdkconfig.old
+sdkconfig.old.*
+
+# Local TLS CA override (do not commit)
+/spiffs_image/ca.pem
+/spiffs_image/ca.der

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Discord Bot — Config</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh;padding:24px 16px}
+    h1{font-size:1.4rem;margin-bottom:4px;color:#58a6ff}
+    .sub{color:#8b949e;font-size:.85rem;margin-bottom:24px}
+    .card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px;margin-bottom:16px}
+    h2{font-size:.95rem;text-transform:uppercase;letter-spacing:.06em;color:#8b949e;margin-bottom:14px}
+    label{display:block;font-size:.85rem;color:#8b949e;margin-bottom:2px}
+    input[type=text],input[type=password],input[type=number]{
+      width:100%;padding:8px 12px;background:#0d1117;color:#e6edf3;
+      border:1px solid #30363d;border-radius:6px;font-size:.9rem;margin-bottom:14px
+    }
+    input:focus{outline:none;border-color:#58a6ff}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .btn{display:inline-block;padding:10px 24px;background:#238636;color:#fff;
+         border:none;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:600}
+    .btn:hover{background:#2ea043}
+    .status{background:#0d1117;border:1px solid #30363d;border-radius:6px;
+            padding:14px;font-size:.85rem;line-height:1.8}
+    .ok{color:#3fb950}.err{color:#f85149}.warn{color:#d29922}
+    .pill{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600}
+    .pill-green{background:#1f4f2e;color:#3fb950}
+    .pill-red{background:#4b1c1c;color:#f85149}
+  </style>
+</head>
+<body>
+  <h1>Discord Bot</h1>
+  <p class="sub">M5StickC PLUS2 — Configuration Panel</p>
+
+  <!-- Live status -->
+  <div class="card">
+    <h2>Live Status</h2>
+    <div class="status" id="status-box">Loading...</div>
+  </div>
+
+  <!-- Config form -->
+  <form id="cfg-form" method="POST" action="/save">
+    <div class="card">
+      <h2>Discord Credentials</h2>
+      <label>Bot Token</label>
+      <input type="password" name="bot_token" placeholder="Paste raw token, without Bot prefix" autocomplete="off">
+      <label>Guild (Server) ID</label>
+      <input type="text" name="guild_id" placeholder="Right-click server → Copy Server ID">
+      <div class="row">
+        <div>
+          <label>Moderation Channel ID</label>
+          <input type="text" name="channel_id" placeholder="Channel ID">
+        </div>
+        <div>
+          <label>Log / Audit Channel ID</label>
+          <input type="text" name="log_channel_id" placeholder="Log channel ID">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>WiFi</h2>
+      <label>SSID</label>
+      <input type="text" name="wifi_ssid" placeholder="Network name" autocomplete="off">
+      <label>Password</label>
+      <input type="password" name="wifi_pass" placeholder="WiFi password" autocomplete="off">
+    </div>
+
+    <div class="card">
+      <h2>Moderation Rules</h2>
+      <label>Banned keywords <span style="color:#8b949e;font-size:.8rem">(comma-separated, case-insensitive)</span></label>
+      <input type="text" name="keywords" placeholder="spam, raid, badword">
+      <div class="row">
+        <div>
+          <label>Max mentions per message</label>
+          <input type="number" name="mention_thresh" value="5" min="1" max="20">
+        </div>
+        <div>
+          <label>Max links per message</label>
+          <input type="number" name="link_thresh" value="3" min="1" max="10">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" type="submit">Save &amp; Restart Bot</button>
+    <p style="margin-top:10px;font-size:.8rem;color:#8b949e">
+      The bot will restart automatically after saving.
+    </p>
+  </form>
+
+  <script>
+    function fmtUptime(s) {
+      const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600),
+            m = Math.floor((s % 3600) / 60), sec = s % 60;
+      return (d ? d + 'd ' : '') + (h ? h + 'h ' : '') + m + 'm ' + sec + 's';
+    }
+
+    function updateStatus() {
+      fetch('/status')
+        .then(r => r.json())
+        .then(d => {
+          const gw = d.gw === 'Connected';
+          document.getElementById('status-box').innerHTML =
+            'Gateway: <span class="pill ' + (gw ? 'pill-green' : 'pill-red') + '">' + d.gw + '</span>'
+            + ' &nbsp; Latency: <span class="ok">' + (d.latency || '—') + ' ms</span><br>'
+            + 'Free heap: <span class="ok">' + d.heap + ' KB</span>'
+            + ' &nbsp; Uptime: ' + fmtUptime(d.uptime) + '<br>'
+            + 'WiFi RSSI: <span class="' + (d.rssi > -70 ? 'ok' : 'warn') + '">' + d.rssi + ' dBm</span>';
+        })
+        .catch(() => {
+          document.getElementById('status-box').innerHTML =
+            '<span class="err">Cannot reach device</span>';
+        });
+    }
+
+    updateStatus();
+    setInterval(updateStatus, 3000);
+  </script>
+</body>
+</html>
