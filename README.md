@@ -120,7 +120,6 @@ Important: paste the raw Discord bot token into the device configuration page. D
 Open ESP-IDF PowerShell, then run:
 
 ```powershell
-cd C:\Users\sambosa\Documents\Git\audio-2-m5stackplus2
 idf.py set-target esp32
 idf.py build
 idf.py -p COM5 flash monitor
@@ -131,7 +130,6 @@ Replace `COM5` with your actual serial port.
 To reset all saved configuration and flash clean:
 
 ```powershell
-cd C:\Users\sambosa\Documents\Git\audio-2-m5stackplus2
 idf.py -p COM5 erase-flash
 idf.py build
 idf.py -p COM5 flash monitor
